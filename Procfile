@@ -1,1 +1,1 @@
-web: python3 good_game_bot.py
+worker: python3 good_game_bot.py
