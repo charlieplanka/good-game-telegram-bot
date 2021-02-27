@@ -85,6 +85,7 @@ def start(message):
 
 @bot.callback_query_handler(func=lambda call: call.data in INFO_COMMANDS)
 def info_handler(call):
+    bot.answer_callback_query(callback_query_id=call.id)
     if call.data == HOW_TO_COMMAND:
         text = HOW_TO_TEXT
     elif call.data == PRIZES_COMMAND:
@@ -98,6 +99,7 @@ def info_handler(call):
 def open_box_handler(call):
     global PRIZE_RECEIVED
 
+    bot.answer_callback_query(callback_query_id=call.id)
     markup = configure_keyboard(command=call.data)
     if PRIZE_RECEIVED:
         bot.send_message(call.message.chat.id, 'Вы уже получили свой приз. Пополните счёт, чтобы получить новые призы.', reply_markup=markup)
@@ -137,7 +139,8 @@ def open_box_handler(call):
 @bot.callback_query_handler(func=lambda call: call.data in BOX_CHOICES)
 def box_choices_handler(call):
     global PRIZE_RECEIVED
-    
+
+    bot.answer_callback_query(callback_query_id=call.id)
     text = call.data
     final_text = f'Поздравляем, вы получаете {text}!'
     markup = configure_keyboard(START_COMMAND)
