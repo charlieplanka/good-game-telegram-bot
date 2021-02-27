@@ -130,7 +130,7 @@ def open_box_handler(call):
     else:
         text = 'Нужно пополнить счёт не менее, чем на 250 рублей, чтобы получить подарок 😢'
 
-    text = ' '.join(balance_text, text)
+    text = ' '.join((balance_text, text))
     bot.send_message(call.message.chat.id, text, reply_markup=markup)
 
 
