@@ -58,26 +58,18 @@ HOW_TO_BUTTON = telebot.types.InlineKeyboardButton(text='Как открыть �
 PRIZES_BUTTON = telebot.types.InlineKeyboardButton(text='Призы', callback_data=PRIZES_COMMAND)
 OPEN_BOX_BUTTON = telebot.types.InlineKeyboardButton(text='Открыть коробку', callback_data=OPEN_BOX_COMMAND)
 
-SINGLE_250 = 'box_choice_250_single'
-DOUBLE_250 = 'box_choice_250_double'
-SINGLE_500 = 'box_choice_500_single'
-TRIPLE_250 = 'box_choice_250_triple'
-DOUBLE_500 = 'box_choice_500_double'
-SINGLE_1000 = 'box_choice_1000_single'
-TRIPLE_500 = 'box_choice_500_triple'
-DOUBLE_1000 = 'box_choice_1000_double'
-SINGLE_2000 = 'box_choice_2000_single'
+SINGLE_250 = 'Базовый Кейс'
+DOUBLE_250 = '2 Базовых Кейса'
+SINGLE_500 = 'Кейс для Бояр'
+TRIPLE_250 = '3 Базовых Кейса'
+DOUBLE_500 = '2 Кейса для Бояр'
+SINGLE_1000 = 'Кейс для Вельмож'
+TRIPLE_500 = '3 Кейса для Бояр'
+DOUBLE_1000 = '2 Кейса для вельмож'
+SINGLE_2000 = 'Кейс для Меценатов'
 BOX_CHOICES = SINGLE_250, DOUBLE_250, SINGLE_500, TRIPLE_250, DOUBLE_500, SINGLE_1000, TRIPLE_500, DOUBLE_1000, SINGLE_2000
 
-SINGLE_250_TEXT = 'Базовый Кейс'
-DOUBLE_250_TEXT = '2 Базовых Кейса'
-SINGLE_500_TEXT = 'Кейс для Бояр'
-TRIPLE_250_TEXT = '3 Базовых Кейса'
-DOUBLE_500_TEXT = '2 Кейса для Бояр'
-SINGLE_1000_TEXT = 'Кейс для Вельмож'
-TRIPLE_500_TEXT = '3 Кейса для Бояр'
-DOUBLE_1000_TEXT = '2 Кейса для вельмож'
-SINGLE_2000_TEXT = 'Кейс для Меценатов'
+PRIZE_RECEIVED = False
 
 bot = telebot.TeleBot(TOKEN, parse_mode=None)
 logger = telebot.logger
@@ -93,7 +85,6 @@ def start(message):
 
 @bot.callback_query_handler(func=lambda call: call.data in INFO_COMMANDS)
 def info_handler(call):
-    text = ' '
     if call.data == 'how_to':
         text = HOW_TO_TEXT
     elif call.data == 'prizes':
@@ -105,13 +96,20 @@ def info_handler(call):
 
 @bot.callback_query_handler(func=lambda call: call.data == OPEN_BOX_COMMAND)
 def open_box_handler(call):
+    global PRIZE_RECEIVED
+
     markup = configure_keyboard(command=call.data)
-    text = ' '
+    if PRIZE_RECEIVED:
+        bot.send_message(call.message.chat.id, 'Вы уже получили свой приз. Пополните счёт, чтобы получить новые призы.', reply_markup=markup)
+        PRIZE_RECEIVED = False
+        return
+
     balance = get_balance()
     balance_text = f'За последние 24 часа вы пополнили баланс на {balance} рублей. '
-    
+
     if balance >= 250 and balance < 500:
-        text = f'Поздравляем, вы получаете {SINGLE_250_TEXT}!'
+        text = f'Поздравляем, вы получаете {SINGLE_250}!'
+        PRIZE_RECEIVED = True
     elif balance >= 500:
         text = 'У вас доступно несколько коробок:'
         if balance < 1000:
@@ -138,30 +136,13 @@ def open_box_handler(call):
 
 @bot.callback_query_handler(func=lambda call: call.data in BOX_CHOICES)
 def box_choices_handler(call):
-    markup = configure_keyboard(START_COMMAND)
-    text = ' '
-    data = call.data
-    if data == SINGLE_250:
-        text = SINGLE_250_TEXT
-    elif data == DOUBLE_250:
-        text = DOUBLE_250_TEXT
-    elif data == SINGLE_500:
-        text = SINGLE_500_TEXT
-    elif data == TRIPLE_250:
-        text = TRIPLE_250_TEXT
-    elif data == DOUBLE_500:
-        text = DOUBLE_500_TEXT
-    elif data == SINGLE_1000:
-        text = SINGLE_1000_TEXT
-    elif data == TRIPLE_500:
-        text = TRIPLE_500_TEXT
-    elif data == DOUBLE_1000:
-        text = DOUBLE_1000_TEXT
-    elif data == SINGLE_2000:
-        text = SINGLE_2000_TEXT
-
+    global PRIZE_RECEIVED
+    
+    text = call.data
     final_text = f'Поздравляем, вы получаете {text}!'
+    markup = configure_keyboard(START_COMMAND)
     bot.send_message(call.message.chat.id, final_text, reply_markup=markup)
+    PRIZE_RECEIVED = True
 
 
 def configure_keyboard(command=None, buttons=None):
