@@ -1,0 +1,1 @@
+web: python3 good_game_bot.py
