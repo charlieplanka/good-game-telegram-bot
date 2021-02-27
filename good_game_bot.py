@@ -132,7 +132,7 @@ def open_box_handler(call):
     else:
         text = 'Нужно пополнить счёт не менее, чем на 250 рублей, чтобы получить подарок 😢'
 
-    text = ' '.join((balance_text, text))
+    text = ''.join((balance_text, text))
     bot.send_message(call.message.chat.id, text, reply_markup=markup)
 
 
@@ -151,6 +151,7 @@ def box_choices_handler(call):
 def configure_keyboard(command=None, buttons=None):
     markup = telebot.types.InlineKeyboardMarkup()
     if buttons:
+        markup.row_width = 2
         markup.add(*buttons)
     elif command == START_COMMAND or command == OPEN_BOX_COMMAND:
         markup.add(OPEN_BOX_BUTTON)
