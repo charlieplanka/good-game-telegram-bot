@@ -65,7 +65,7 @@ TRIPLE_250 = '3 Базовых Кейса'
 DOUBLE_500 = '2 Кейса для Бояр'
 SINGLE_1000 = 'Кейс для Вельмож'
 TRIPLE_500 = '3 Кейса для Бояр'
-DOUBLE_1000 = '2 Кейса для вельмож'
+DOUBLE_1000 = '2 Кейса для Вельмож'
 SINGLE_2000 = 'Кейс для Меценатов'
 BOX_CHOICES = SINGLE_250, DOUBLE_250, SINGLE_500, TRIPLE_250, DOUBLE_500, SINGLE_1000, TRIPLE_500, DOUBLE_1000, SINGLE_2000
 
