@@ -8,7 +8,8 @@ import requests
 # load API token
 load_dotenv()
 TOKEN = os.getenv('API_TOKEN')
-# to receive user's balance status
+
+# to receive user's fake balance
 MONEY_URL = 'https://api.jsonbin.io/b/5f8daafdadfa7a7bbea58fad/2'
 
 HOW_TO_TEXT = '''
@@ -47,9 +48,15 @@ PRIZES_TEXT = '''
 • Пакет в зал VIP (ночной)
 '''
 
-HOW_TO_BUTTON = telebot.types.InlineKeyboardButton(text='Как открыть коробку?', callback_data='how_to')
-PRIZES_BUTTON = telebot.types.InlineKeyboardButton(text='Призы', callback_data='prizes')
-OPEN_BOX_BUTTON = telebot.types.InlineKeyboardButton(text='Открыть коробку', callback_data='open_box')
+START_COMMAND = 'start'
+HOW_TO_COMMAND = 'how_to'
+PRIZES_COMMAND = 'prizes'
+OPEN_BOX_COMMAND = 'open_box'
+INFO_COMMANDS = HOW_TO_COMMAND, PRIZES_COMMAND
+
+HOW_TO_BUTTON = telebot.types.InlineKeyboardButton(text='Как открыть коробку?', callback_data=HOW_TO_COMMAND)
+PRIZES_BUTTON = telebot.types.InlineKeyboardButton(text='Призы', callback_data=PRIZES_COMMAND)
+OPEN_BOX_BUTTON = telebot.types.InlineKeyboardButton(text='Открыть коробку', callback_data=OPEN_BOX_COMMAND)
 
 DOUBLE_250 = 'box_choice_250_double'
 SINGLE_500 = 'box_choice_500_single'
@@ -60,14 +67,14 @@ logger = telebot.logger
 telebot.logger.setLevel(logging.DEBUG)
 
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=[START_COMMAND])
 def start(message):
     text = 'Добро пожаловать! У тебя есть шанс получить классные коробки с призами от Good Game. Жми на кнопки, чтобы узнать больше!'
     markup = configure_keyboard('start')
     bot.send_message(message.chat.id, text, reply_markup=markup)
 
 
-@bot.callback_query_handler(func=lambda call: call.data in ('how_to', 'prizes'))
+@bot.callback_query_handler(func=lambda call: call.data in INFO_COMMANDS)
 def info_handler(call):
     text = ' '
     if call.data == 'how_to':
@@ -79,7 +86,7 @@ def info_handler(call):
     bot.send_message(call.message.chat.id, text, reply_markup=markup)
 
 
-@bot.callback_query_handler(func=lambda call: call.data == 'open_box')
+@bot.callback_query_handler(func=lambda call: call.data == OPEN_BOX_COMMAND)
 def open_box_handler(call):
     markup = configure_keyboard(command=call.data)
     text = ' '
@@ -116,12 +123,12 @@ def configure_keyboard(command=None, buttons=None):
     markup = telebot.types.InlineKeyboardMarkup()
     if buttons:
         markup.add(*buttons)
-    elif command == 'start' or command == 'open_box':
+    elif command == START_COMMAND or command == OPEN_BOX_COMMAND:
         markup.add(OPEN_BOX_BUTTON)
         markup.add(PRIZES_BUTTON, HOW_TO_BUTTON)
-    elif command == 'how_to':
+    elif command == HOW_TO_COMMAND:
         markup.add(OPEN_BOX_BUTTON, PRIZES_BUTTON)
-    elif command == 'prizes':
+    elif command == PRIZES_COMMAND:
         markup.add(OPEN_BOX_BUTTON, HOW_TO_BUTTON)
     return markup
 
