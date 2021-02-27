@@ -7,7 +7,7 @@ import requests
 
 # load API token
 load_dotenv()
-TOKEN = os.getenv('API_TOKEN')
+TOKEN = os.getenv('TOKEN')
 
 # to receive user's fake balance
 MONEY_URL = 'https://api.jsonbin.io/b/5f8daafdadfa7a7bbea58fad/2'
