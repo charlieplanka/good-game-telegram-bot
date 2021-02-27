@@ -78,16 +78,16 @@ telebot.logger.setLevel(logging.DEBUG)
 
 @bot.message_handler(commands=[START_COMMAND])
 def start(message):
-    text = 'Добро пожаловать! У тебя есть шанс получить классные коробки с призами от Good Game. Жми на кнопки, чтобы узнать больше!'
-    markup = configure_keyboard('start')
+    text = 'Добро пожаловать! Здесь ты можешь получить классные коробки с призами от Good Game. Жми на кнопки, чтобы узнать больше!'
+    markup = configure_keyboard(START_COMMAND)
     bot.send_message(message.chat.id, text, reply_markup=markup)
 
 
 @bot.callback_query_handler(func=lambda call: call.data in INFO_COMMANDS)
 def info_handler(call):
-    if call.data == 'how_to':
+    if call.data == HOW_TO_COMMAND:
         text = HOW_TO_TEXT
-    elif call.data == 'prizes':
+    elif call.data == PRIZES_COMMAND:
         text = PRIZES_TEXT
 
     markup = configure_keyboard(call.data)
@@ -130,7 +130,7 @@ def open_box_handler(call):
     else:
         text = 'Нужно пополнить счёт не менее, чем на 250 рублей, чтобы получить подарок 😢'
 
-    text = balance_text + text
+    text = ' '.join(balance_text, text)
     bot.send_message(call.message.chat.id, text, reply_markup=markup)
 
 
